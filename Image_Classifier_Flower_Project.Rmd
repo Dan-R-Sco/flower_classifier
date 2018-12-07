@@ -135,7 +135,7 @@ train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,sam
                                           num_workers=num_workers)
 valid_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, 
     sampler=valid_sampler, num_workers=num_workers)
-testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
+test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 ```
 
 ### Label mapping
@@ -247,7 +247,7 @@ optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
 ### Train the network
 
-```{python colab_type=code, id=zYu3cZheQGSN, colab={'base_uri': 'https://localhost:8080/', 'height': 1176}, outputId=9daf69d8-60b3-4fb1-e0bd-c8d66f11746e, executionInfo={'status': 'error', 'timestamp': 1544175952524, 'user_tz': -360, 'elapsed': 390024, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+```{python colab_type=code, id=zYu3cZheQGSN, colab={}}
 # number of epochs to train the model
 n_epochs = 30
 model.to(device); #move model to GPU if available
@@ -318,10 +318,39 @@ for epoch in range(1, n_epochs+1):
         print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ...'.format(
         valid_loss_min,
         valid_loss))
-        torch.save(model.state_dict(), 'model_augmented.pt')
+        model.class_to_idx = train_data.class_to_idx
+        states = {
+            'epoch': epoch,
+            'state_dict': model.state_dict(),
+            'optimizer': optimizer.state_dict()
+        }                
+        torch.save(states, 'checkpoint.pt')
         valid_loss_min = valid_loss
 ```
 
-```{python colab_type=code, id=3o4knBNwu_ac, colab={}}
+## Loading the checkpoint
+
+Let's write a function that can load a checkpoint and rebuild the model, so we can come back to this project and keep working on it without having to retrain the network.
+
+```{python colab_type=code, id=3o4knBNwu_ac, colab={'base_uri': 'https://localhost:8080/', 'height': 639843, 'output_embedded_package_id': '1GFMr9g3-yx8tUrhU43tTunU6VHnlnA-F'}, outputId=0d692652-311b-4c47-af90-77724ba24f85, executionInfo={'status': 'ok', 'timestamp': 1544184154295, 'user_tz': -360, 'elapsed': 6693, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+# https://discuss.pytorch.org/t/how-to-save-the-optimizer-setting-in-a-log-in-pytorch/17187/2
+def checkpoint_loader(filename):
+  state_dict = torch.load(filename)
+#  print(state_dict.checkpoint['state_dict'])
+  
+  return state_dict
+
+state_dict = torch.load('model_augmented.pt')
+
+optimizer.load_state_dict(state_dict['optimizer'])
+model.load_state_dict(state_dict['state_dict'])
+print('optimizer: ',state_dict['optimizer'])
+print('state_dict: ',state_dict['state_dict'])
+print('epoch: ',state_dict['epoch'])
+
+
+```
+
+```{python id=vtSdT9onXvQy, colab_type=code, colab={}}
 
 ```
