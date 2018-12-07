@@ -134,7 +134,7 @@ testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 
 Mapping from a category label to a category name has to be loaded and it can be found in the file `cat_to_name.json`. It's a JSON object which can be read in with the [`json` module](https://docs.python.org/2/library/json.html). This will give us a dictionary mapping the integer encoded categories to the actual names of the flowers.
 
-```{python id=jFHX9AXE95Zg, colab_type=code, colab={}}
+```{python colab_type=code, id=jFHX9AXE95Zg, colab={}}
 import json
 
 #!wget https://drive.google.com/file/d/1H5bhIyF2HQc7G_SPvKg_Q4dmTN6CFHLF/view?usp=sharing 
@@ -142,6 +142,20 @@ with open('flower_data/cat_to_name.json', 'r') as f:
     cat_to_name = json.load(f)
 ```
 
-```{python id=oo04LHc697iZ, colab_type=code, colab={}}
+# Building and training the classifier
+
+The data is ready, so it's time to build and train the classifier. One of the pretrained models from `torchvision.models` will be used to get the image features. Build and train a new feed-forward classifier using those features.
+
+We're going to leave this part up to you. If you want to talk through it with someone, chat with your fellow students! You can also ask questions on the forums or join the instructors in office hours.
+
+* Load a [pre-trained network](http://pytorch.org/docs/master/torchvision/models.html) 
+* Define a new, untrained feed-forward network as a classifier, using ReLU activations and dropout
+* Train the classifier layers using backpropagation using the pre-trained network to get the features
+* Track the loss and accuracy on the validation set to determine the best hyperparameters
+
+
+
+
+```{python colab_type=code, id=oo04LHc697iZ, colab={}}
 
 ```
