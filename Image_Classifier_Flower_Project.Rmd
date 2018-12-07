@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-```{python}
+```{python id=Ni6OGZ2y5qek, colab_type=code, outputId=3be463f1-7593-463f-d204-474bf50731a4, executionInfo={'status': 'ok', 'timestamp': 1544156165981, 'user_tz': -360, 'elapsed': 1039, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
 # %autosave 0
 ```
 
@@ -35,16 +35,97 @@ When the project is completed, we'll have an application that can be trained on 
 
 First up is importing the packages you'll need. It's good practice to keep all the imports at the beginning of your code. As you work through this notebook and find you need to import a package, make sure to add the import up here.
 
-```{python}
-# Imports here
+The program is run on Colab. So, we need to install torch first before running code. 
+
+```{python id=ZyVGourE6PQX, colab_type=code, colab={}}
+# http://pytorch.org/
+from os.path import exists
+from wheel.pep425tags import get_abbr_impl, get_impl_ver, get_abi_tag
+platform = '{}{}-{}'.format(get_abbr_impl(), get_impl_ver(), get_abi_tag())
+cuda_output = !ldconfig -p|grep cudart.so|sed -e 's/.*\.\([0-9]*\)\.\([0-9]*\)$/cu\1\2/'
+accelerator = cuda_output[0] if exists('/dev/nvidia0') else 'cpu'
+
+!pip install -q http://download.pytorch.org/whl/{accelerator}/torch-0.4.1-{platform}-linux_x86_64.whl torchvision
+import torch
+```
+
+```{python id=isu5fx7s5qet, colab_type=code, colab={}}
+# Imports here all packages which will be needed for the program 
 # %matplotlib inline
 # %config InlineBackend.figure_format = 'retina'
 
 import matplotlib.pyplot as plt
-
+import numpy as np
 import torch
 from torch import nn
 from torch import optim
 import torch.nn.functional as F
 from torchvision import datasets, transforms, models
+from torch.utils.data.sampler import SubsetRandomSampler
+```
+
+## Load the data
+
+ `torchvision` will be used to load the data ([documentation](http://pytorch.org/docs/0.3.0/torchvision/index.html)). You can [download the data here](https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip). The dataset is split into two parts, training and validation. For the training, you'll want to apply transformations such as random scaling, cropping, and flipping. This will help the network generalize leading to better performance. If a pre-trained network is used, make sure the input data is resized to 224x224 pixels as required by the networks.
+
+The validation set is used to measure the model's performance on data it hasn't seen yet. For this we don't want any scaling or rotation transformations, but we'll need to resize then crop the images to the appropriate size.
+
+The pre-trained networks available from `torchvision` were trained on the ImageNet dataset where each color channel was normalized separately. For both sets you'll need to normalize the means and standard deviations of the images to what the network expects. For the means, it's `[0.485, 0.456, 0.406]` and for the standard deviations `[0.229, 0.224, 0.225]`, calculated from the ImageNet images.  These values will shift each color channel to be centered at 0 and range from -1 to 1.
+
+```{python id=JMjhrWBd6Nv-, colab_type=code, outputId=45d5cf08-a6e3-4bd6-d725-73e3ebd4b442, executionInfo={'status': 'ok', 'timestamp': 1544156216656, 'user_tz': -360, 'elapsed': 9372, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, colab={'base_uri': 'https://localhost:8080/', 'height': 226}}
+#download a flower dataset
+!wget https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip
+  
+```
+
+```{python id=WhGh5ZXA6qE1, colab_type=code, colab={}}
+#unzip the downloaded dataset
+!unzip flower_data.zip
+```
+
+```{python id=VqHTA5AA60pt, colab_type=code, colab={}}
+data_dir = 'flower_data'
+train_dir = data_dir + '/train'
+valid_dir = data_dir + '/valid'
+# number of subprocesses to use for data loading
+num_workers = 0
+# how many samples per batch to load
+batch_size=64
+# percentage of training set to use as validation
+valid_size = 0.2
+
+# TODO: Define transforms for the training data and testing data
+train_transforms = transforms.Compose([transforms.RandomRotation(30),
+                                       transforms.RandomResizedCrop(224),
+                                       transforms.RandomHorizontalFlip(),
+                                       transforms.ToTensor(),
+                                       transforms.Normalize([0.485, 0.456, 0.406],
+                                                            [0.229, 0.224, 0.225])])
+
+test_transforms = transforms.Compose([transforms.Resize(255),
+                                      transforms.CenterCrop(224),
+                                      transforms.ToTensor(),
+                                      transforms.Normalize([0.485, 0.456, 0.406],
+                                                           [0.229, 0.224, 0.225])])
+
+# Pass transforms in here, then run the next cell to see how the transforms look
+train_data = datasets.ImageFolder(data_dir + '/train', transform=train_transforms)
+test_data = datasets.ImageFolder(data_dir + '/valid', transform=test_transforms)
+
+# obtain training indices that will be used for validation
+num_train = len(train_data)
+indices = list(range(num_train))
+np.random.shuffle(indices)
+split = int(np.floor(valid_size * num_train))
+train_idx, valid_idx = indices[split:], indices[:split]
+
+# define samplers for obtaining training and validation batches
+train_sampler = SubsetRandomSampler(train_idx)
+valid_sampler = SubsetRandomSampler(valid_idx)
+
+trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,sampler=train_sampler,
+                                          num_workers=num_workers)
+valid_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, 
+    sampler=valid_sampler, num_workers=num_workers)
+testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 ```
