@@ -12,8 +12,8 @@ jupyter:
     name: python3
 ---
 
-```{python colab_type=code, executionInfo={'elapsed': 1039, 'status': 'ok', 'timestamp': 1544156165981, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=Ni6OGZ2y5qek, outputId=3be463f1-7593-463f-d204-474bf50731a4, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
-# %autosave 0
+```{python colab_type=code, id=Ni6OGZ2y5qek, colab={}}
+# #%autosave 0
 ```
 
 # Developing an AI application
@@ -37,7 +37,7 @@ First up is importing the packages you'll need. It's good practice to keep all t
 
 The program is run on Colab. So, we need to install torch first before running code. 
 
-```{python colab_type=code, id=ZyVGourE6PQX, colab={}}
+```{python colab_type=code, id=ZyVGourE6PQX, colab={'base_uri': 'https://localhost:8080/', 'height': 54}, outputId=52ec560e-a855-446e-cced-024d63fb3eee, executionInfo={'status': 'ok', 'timestamp': 1544170642157, 'user_tz': -360, 'elapsed': 34688, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
 # http://pytorch.org/
 from os.path import exists
 from wheel.pep425tags import get_abbr_impl, get_impl_ver, get_abi_tag
@@ -65,6 +65,13 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from collections import OrderedDict
 ```
 
+```{python id=1deJPK6pyX-3, colab_type=code, colab={'base_uri': 'https://localhost:8080/', 'height': 188}, outputId=8dc420b0-82f6-481f-e1b2-7cce4830edaa, executionInfo={'status': 'ok', 'timestamp': 1544171578866, 'user_tz': -360, 'elapsed': 7867, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+!pip install Pillow==4.0.0
+!pip install PIL
+!pip install image
+import PIL
+```
+
 ## Load the data
 
  `torchvision` will be used to load the data ([documentation](http://pytorch.org/docs/0.3.0/torchvision/index.html)). You can [download the data here](https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip). The dataset is split into two parts, training and validation. For the training, you'll want to apply transformations such as random scaling, cropping, and flipping. This will help the network generalize leading to better performance. If a pre-trained network is used, make sure the input data is resized to 224x224 pixels as required by the networks.
@@ -73,7 +80,7 @@ The validation set is used to measure the model's performance on data it hasn't 
 
 The pre-trained networks available from `torchvision` were trained on the ImageNet dataset where each color channel was normalized separately. For both sets you'll need to normalize the means and standard deviations of the images to what the network expects. For the means, it's `[0.485, 0.456, 0.406]` and for the standard deviations `[0.229, 0.224, 0.225]`, calculated from the ImageNet images.  These values will shift each color channel to be centered at 0 and range from -1 to 1.
 
-```{python colab_type=code, executionInfo={'elapsed': 9372, 'status': 'ok', 'timestamp': 1544156216656, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=JMjhrWBd6Nv-, outputId=45d5cf08-a6e3-4bd6-d725-73e3ebd4b442, colab={'base_uri': 'https://localhost:8080/', 'height': 226}}
+```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544170718582, 'user_tz': -360, 'elapsed': 6987, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=JMjhrWBd6Nv-, outputId=195ab5ac-d38b-45d8-cf5a-4e472bed8004, colab={'base_uri': 'https://localhost:8080/', 'height': 206}}
 #download a flower dataset
 !wget https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip
   
@@ -124,7 +131,7 @@ train_idx, valid_idx = indices[split:], indices[:split]
 train_sampler = SubsetRandomSampler(train_idx)
 valid_sampler = SubsetRandomSampler(valid_idx)
 
-trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,sampler=train_sampler,
+train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,sampler=train_sampler,
                                           num_workers=num_workers)
 valid_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, 
     sampler=valid_sampler, num_workers=num_workers)
@@ -135,7 +142,7 @@ testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 
 Mapping from a category label to a category name has to be loaded and it can be found in the file `cat_to_name.json`. It's a JSON object which can be read in with the [`json` module](https://docs.python.org/2/library/json.html). This will give us a dictionary mapping the integer encoded categories to the actual names of the flowers.
 
-```{python colab_type=code, id=jFHX9AXE95Zg, colab={}}
+```{python colab_type=code, id=jFHX9AXE95Zg, colab={'base_uri': 'https://localhost:8080/', 'height': 216}, outputId=8b5371f4-27ca-4c54-e057-b0c7d616d2f3, executionInfo={'status': 'error', 'timestamp': 1544170829121, 'user_tz': -360, 'elapsed': 657, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
 import json
 
 #!wget https://drive.google.com/file/d/1H5bhIyF2HQc7G_SPvKg_Q4dmTN6CFHLF/view?usp=sharing 
@@ -160,29 +167,154 @@ We're going to leave this part up to you. If you want to talk through it with so
 
 Let's load in a model such as **`DenseNet`** and print out the architecture
 
-```{python id=18eI5i6OHY1e, colab_type=code, colab={'base_uri': 'https://localhost:8080/', 'height': 8677}, outputId=aa9e7329-fa87-465d-d7a8-7d6b24069bef, executionInfo={'status': 'ok', 'timestamp': 1544160135977, 'user_tz': -360, 'elapsed': 2317, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544170842261, 'user_tz': -360, 'elapsed': 1611, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=18eI5i6OHY1e, outputId=2564ab91-1125-47f7-8c2c-e999111c72fe, colab={'base_uri': 'https://localhost:8080/', 'height': 8677}}
 model = models.densenet121(pretrained=True)
 model
 ```
 
 This model is built out of two main parts, the features and the classifier. The features part is a stack of convolutional layers and overall works as a feature detector that can be fed into a classifier. The classifier part is a single fully-connected layer (classifier): Linear(in_features=1024, out_features=1000). This layer was trained on the ImageNet dataset, so it won't work for our specific problem. That means we need to replace the classifier, but the features will work perfectly on their own. In general, I think about pre-trained networks as amazingly good feature detectors that can be used as the input for simple feed-forward classifiers.
 
-```{python id=9xpCxi9fHbBV, colab_type=code, colab={'base_uri': 'https://localhost:8080/', 'height': 120}, outputId=3bbbe978-595c-4fa3-ff29-411e3feba155, executionInfo={'status': 'ok', 'timestamp': 1544160626726, 'user_tz': -360, 'elapsed': 728, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544170851180, 'user_tz': -360, 'elapsed': 604, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=9xpCxi9fHbBV, outputId=2e82166d-af6e-4448-c739-19cf355379a5, colab={'base_uri': 'https://localhost:8080/', 'height': 103}}
 # Freeze parameters so we don't backprop through them
 for param in model.parameters():
     param.requires_grad = False
 
-classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(1024, 500)),
-                          ('relu', nn.ReLU()),
-                          ('fc2', nn.Linear(500, 102)),
-                          ('output', nn.LogSoftmax(dim=1))
-                          ]))
+#classifier = nn.Sequential(OrderedDict([
+#                          ('fc1', nn.Linear(1024, 500)),
+#                          ('relu', nn.ReLU()),
+#                          ('fc2', nn.Linear(500, 102)),
+#                          ('output', nn.LogSoftmax(dim=1))
+#                          ]))
+
+# define the CNN architecture
+class Classifier(nn.Module):
+    def __init__(self):
+        super(Classifier, self).__init__()
+        # linear layer (1024 -> 500)
+        self.fc1 = nn.Linear(1024, 500)
+        # linear layer (500 -> 102)
+        self.fc2 = nn.Linear(500, 102)
+        # dropout layer (p=0.25)
+        self.dropout = nn.Dropout(0.25)
+
+    def forward(self, x):
+        # flatten image input
+        x = x.view(-1, 1024)
+        # add dropout layer
+        x = self.dropout(x)
+        # add 1st hidden layer, with relu activation function
+        x = F.relu(self.fc1(x))
+        # add dropout layer
+        x = self.dropout(x)
+        # add 2nd hidden layer, with relu activation function
+        x = self.fc2(x)
+        return x
     
-model.classifier = classifier 
-classifier
+model.classifier = Classifier() 
+Classifier()
 ```
 
-```{python id=JskcQAKAJNRS, colab_type=code, colab={}}
+Let's train the classifier. For deep NN it is better to use GPU dseigned for matrix / tensor operations in parallel.  
+
+```{python colab_type=code, id=JskcQAKAJNRS, colab={'base_uri': 'https://localhost:8080/', 'height': 34}, outputId=eacc594d-0845-4761-e8f5-c38208320e7c, executionInfo={'status': 'ok', 'timestamp': 1544172234024, 'user_tz': -360, 'elapsed': 694, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+#Check if parallel computing is available / if CUDA is available
+
+train_on_gpu = torch.cuda.is_available()
+
+if not train_on_gpu:
+    print('CUDA is not available.  Training on CPU ...')
+    device = "cpu"
+else:
+    print('CUDA is available!  Training on GPU ...')
+    device = "cuda"
+```
+
+### Specify Loss Function and Optimizer
+
+
+
+```{python id=VpmRqZ39PLhH, colab_type=code, colab={}}
+learning_rate = 0.003 
+
+
+
+# specify loss function (categorical cross-entropy)
+criterion = nn.CrossEntropyLoss()
+
+# specify optimizer
+optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+```
+
+### Train the network
+
+```{python id=zYu3cZheQGSN, colab_type=code, colab={}}
+# number of epochs to train the model
+n_epochs = 30
+model.to(device); #move model to GPU if available
+valid_loss_min = np.Inf # track change in validation loss
+
+for epoch in range(1, n_epochs+1):
+
+    # keep track of training and validation loss
+    train_loss = 0.0
+    valid_loss = 0.0
+    accuracy = 0.0
+    
+    ###################
+    # train the model #
+    ###################
+    model.train()
+    for batch_idx, (data, target) in enumerate(train_loader):
+        # move tensors to GPU if CUDA is available
+        if train_on_gpu:
+            data, target = data.cuda(), target.cuda()
+        # clear the gradients of all optimized variables
+        optimizer.zero_grad()
+        # forward pass: compute predicted outputs by passing inputs to the model
+        output = model.forward(data)
+        # calculate the batch loss
+        loss = criterion(output, target)
+        # backward pass: compute gradient of the loss with respect to model parameters
+        loss.backward()
+        # perform a single optimization step (parameter update)
+        optimizer.step()
+        # update training loss
+        train_loss += loss.item()*data.size(0)
+        
+    ######################    
+    # validate the model #
+    ######################
+    model.eval()
+    for batch_idx, (data, target) in enumerate(valid_loader):
+        # move tensors to GPU if CUDA is available
+        if train_on_gpu:
+            data, target = data.cuda(), target.cuda()
+        # forward pass: compute predicted outputs by passing inputs to the model
+        output = model(data)
+        # calculate the batch loss
+        loss = criterion(output, target)
+        # update average validation loss 
+        valid_loss += loss.item()*data.size(0)
+        
+        
+    
+    # calculate average losses
+    train_loss = train_loss/len(train_loader.dataset)
+    valid_loss = valid_loss/len(valid_loader.dataset)
+        
+    # print training/validation statistics 
+    print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(
+        epoch, train_loss, valid_loss))
+    
+    # save model if validation loss has decreased
+    if valid_loss <= valid_loss_min:
+        print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ...'.format(
+        valid_loss_min,
+        valid_loss))
+        torch.save(model.state_dict(), 'model_augmented.pt')
+        valid_loss_min = valid_loss
+```
+
+```{python id=3o4knBNwu_ac, colab_type=code, colab={}}
 
 ```
