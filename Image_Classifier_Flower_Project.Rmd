@@ -62,6 +62,7 @@ from torch import optim
 import torch.nn.functional as F
 from torchvision import datasets, transforms, models
 from torch.utils.data.sampler import SubsetRandomSampler
+from collections import OrderedDict
 ```
 
 ## Load the data
@@ -156,6 +157,32 @@ We're going to leave this part up to you. If you want to talk through it with so
 
 
 
-```{python colab_type=code, id=oo04LHc697iZ, colab={}}
+
+Let's load in a model such as **`DenseNet`** and print out the architecture
+
+```{python id=18eI5i6OHY1e, colab_type=code, colab={'base_uri': 'https://localhost:8080/', 'height': 8677}, outputId=aa9e7329-fa87-465d-d7a8-7d6b24069bef, executionInfo={'status': 'ok', 'timestamp': 1544160135977, 'user_tz': -360, 'elapsed': 2317, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+model = models.densenet121(pretrained=True)
+model
+```
+
+This model is built out of two main parts, the features and the classifier. The features part is a stack of convolutional layers and overall works as a feature detector that can be fed into a classifier. The classifier part is a single fully-connected layer (classifier): Linear(in_features=1024, out_features=1000). This layer was trained on the ImageNet dataset, so it won't work for our specific problem. That means we need to replace the classifier, but the features will work perfectly on their own. In general, I think about pre-trained networks as amazingly good feature detectors that can be used as the input for simple feed-forward classifiers.
+
+```{python id=9xpCxi9fHbBV, colab_type=code, colab={'base_uri': 'https://localhost:8080/', 'height': 120}, outputId=3bbbe978-595c-4fa3-ff29-411e3feba155, executionInfo={'status': 'ok', 'timestamp': 1544160626726, 'user_tz': -360, 'elapsed': 728, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+# Freeze parameters so we don't backprop through them
+for param in model.parameters():
+    param.requires_grad = False
+
+classifier = nn.Sequential(OrderedDict([
+                          ('fc1', nn.Linear(1024, 500)),
+                          ('relu', nn.ReLU()),
+                          ('fc2', nn.Linear(500, 102)),
+                          ('output', nn.LogSoftmax(dim=1))
+                          ]))
+    
+model.classifier = classifier 
+classifier
+```
+
+```{python id=JskcQAKAJNRS, colab_type=code, colab={}}
 
 ```
