@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-```{python id=Ni6OGZ2y5qek, colab_type=code, outputId=3be463f1-7593-463f-d204-474bf50731a4, executionInfo={'status': 'ok', 'timestamp': 1544156165981, 'user_tz': -360, 'elapsed': 1039, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
+```{python colab_type=code, executionInfo={'elapsed': 1039, 'status': 'ok', 'timestamp': 1544156165981, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=Ni6OGZ2y5qek, outputId=3be463f1-7593-463f-d204-474bf50731a4, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
 # %autosave 0
 ```
 
@@ -37,7 +37,7 @@ First up is importing the packages you'll need. It's good practice to keep all t
 
 The program is run on Colab. So, we need to install torch first before running code. 
 
-```{python id=ZyVGourE6PQX, colab_type=code, colab={}}
+```{python colab_type=code, id=ZyVGourE6PQX, colab={}}
 # http://pytorch.org/
 from os.path import exists
 from wheel.pep425tags import get_abbr_impl, get_impl_ver, get_abi_tag
@@ -49,7 +49,7 @@ accelerator = cuda_output[0] if exists('/dev/nvidia0') else 'cpu'
 import torch
 ```
 
-```{python id=isu5fx7s5qet, colab_type=code, colab={}}
+```{python colab_type=code, id=isu5fx7s5qet, colab={}}
 # Imports here all packages which will be needed for the program 
 # %matplotlib inline
 # %config InlineBackend.figure_format = 'retina'
@@ -72,18 +72,18 @@ The validation set is used to measure the model's performance on data it hasn't 
 
 The pre-trained networks available from `torchvision` were trained on the ImageNet dataset where each color channel was normalized separately. For both sets you'll need to normalize the means and standard deviations of the images to what the network expects. For the means, it's `[0.485, 0.456, 0.406]` and for the standard deviations `[0.229, 0.224, 0.225]`, calculated from the ImageNet images.  These values will shift each color channel to be centered at 0 and range from -1 to 1.
 
-```{python id=JMjhrWBd6Nv-, colab_type=code, outputId=45d5cf08-a6e3-4bd6-d725-73e3ebd4b442, executionInfo={'status': 'ok', 'timestamp': 1544156216656, 'user_tz': -360, 'elapsed': 9372, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, colab={'base_uri': 'https://localhost:8080/', 'height': 226}}
+```{python colab_type=code, executionInfo={'elapsed': 9372, 'status': 'ok', 'timestamp': 1544156216656, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=JMjhrWBd6Nv-, outputId=45d5cf08-a6e3-4bd6-d725-73e3ebd4b442, colab={'base_uri': 'https://localhost:8080/', 'height': 226}}
 #download a flower dataset
 !wget https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip
   
 ```
 
-```{python id=WhGh5ZXA6qE1, colab_type=code, colab={}}
+```{python colab_type=code, id=WhGh5ZXA6qE1, colab={}}
 #unzip the downloaded dataset
 !unzip flower_data.zip
 ```
 
-```{python id=VqHTA5AA60pt, colab_type=code, colab={}}
+```{python colab_type=code, id=VqHTA5AA60pt, colab={}}
 data_dir = 'flower_data'
 train_dir = data_dir + '/train'
 valid_dir = data_dir + '/valid'
@@ -128,4 +128,20 @@ trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,samp
 valid_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, 
     sampler=valid_sampler, num_workers=num_workers)
 testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
+```
+
+### Label mapping
+
+Mapping from a category label to a category name has to be loaded and it can be found in the file `cat_to_name.json`. It's a JSON object which can be read in with the [`json` module](https://docs.python.org/2/library/json.html). This will give us a dictionary mapping the integer encoded categories to the actual names of the flowers.
+
+```{python id=jFHX9AXE95Zg, colab_type=code, colab={}}
+import json
+
+#!wget https://drive.google.com/file/d/1H5bhIyF2HQc7G_SPvKg_Q4dmTN6CFHLF/view?usp=sharing 
+with open('flower_data/cat_to_name.json', 'r') as f:
+    cat_to_name = json.load(f)
+```
+
+```{python id=oo04LHc697iZ, colab_type=code, colab={}}
+
 ```
