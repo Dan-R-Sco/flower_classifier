@@ -376,7 +376,7 @@ As before, the network expects the images to be normalized in a specific way. Fo
 And finally, PyTorch expects the color channel to be the first dimension but it's the third dimension in the PIL image and Numpy array. WE can reorder dimensions using [`ndarray.transpose`](https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.ndarray.transpose.html). The color channel needs to be first and retain the order of the other two dimensions.
 
 
-```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544279526456, 'user_tz': -360, 'elapsed': 661, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=BRKVtVxurOx_, outputId=7e82fddb-b4e6-4bf1-9bf0-6ea10d7ca2b8, colab={'base_uri': 'https://localhost:8080/', 'height': 119}}
+```{python colab_type=code, executionInfo={'elapsed': 661, 'status': 'ok', 'timestamp': 1544279526456, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=BRKVtVxurOx_, outputId=7e82fddb-b4e6-4bf1-9bf0-6ea10d7ca2b8, colab={'base_uri': 'https://localhost:8080/', 'height': 119}}
 def process_image(image):
   ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
         returns an Numpy array
@@ -422,7 +422,11 @@ def process_image(image):
 image = process_image('flower_data/valid/1/image_06739.jpg')
 ```
 
-```{python colab_type=code, id=jseTRbj5b2Hd, colab={'base_uri': 'https://localhost:8080/', 'height': 285}, outputId=7f3f903a-8546-4544-d101-1deaff729de0, executionInfo={'status': 'ok', 'timestamp': 1544280769475, 'user_tz': -360, 'elapsed': 1318, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}}
+```{python colab_type=code, executionInfo={'elapsed': 1318, 'status': 'ok', 'timestamp': 1544280769475, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=jseTRbj5b2Hd, outputId=7f3f903a-8546-4544-d101-1deaff729de0, colab={'base_uri': 'https://localhost:8080/', 'height': 285}}
+#To check the work, the function below converts a PyTorch tensor and displays it in the notebook. 
+#If the process_image function works, running the output through this function should return the original image 
+#(except for the cropped out portions).
+
 def imshow(image, ax=None, title=None):
     """Imshow for Tensor."""
     if ax is None:
@@ -448,6 +452,13 @@ imshow(image, ax=None, title=None)
 
 ```
 
-```{python id=d57re_y0O2DJ, colab_type=code, colab={}}
+## Class Prediction
+
+Once we can get images in the correct format, it's time to write a function for making predictions with our model. We will predict the top 5 or so (usually called top-$K$) most probable classes. You'll want to calculate the class probabilities then find the $K$ largest values.
+
+
+```
+
+```{python colab_type=code, id=d57re_y0O2DJ, colab={}}
 
 ```
