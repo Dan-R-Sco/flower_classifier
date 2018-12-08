@@ -376,8 +376,50 @@ As before, the network expects the images to be normalized in a specific way. Fo
 And finally, PyTorch expects the color channel to be the first dimension but it's the third dimension in the PIL image and Numpy array. WE can reorder dimensions using [`ndarray.transpose`](https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.ndarray.transpose.html). The color channel needs to be first and retain the order of the other two dimensions.
 
 
-```{python colab_type=code, executionInfo={'elapsed': 633, 'status': 'ok', 'timestamp': 1544267391780, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=BRKVtVxurOx_, outputId=91431fb1-b2dd-4145-b6bb-06825df27390, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
+```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544278359085, 'user_tz': -360, 'elapsed': 629, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=BRKVtVxurOx_, outputId=8ead6734-87e6-41f2-f460-37516bab56af, colab={'base_uri': 'https://localhost:8080/', 'height': 119}}
+def process_image(image):
+  ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
+        returns an Numpy array
+  '''
+    
+  pil_image = Image.open(image)
+  # Process a PIL image for use in a PyTorch model
+  w, h = pil_image.size
+  if w == h:
+    print('w=h')
+    size = 256, 256
+  elif w > h:
+    print('w>h')
+    ration = h / 256
+    size = int(w/ratio), 256
+  else:
+    print('w < h')
+    ratio = w / 256
+    size = 256, int(h/ratio)
+  
+  print(w,h, ratio, size)
+  #resize image:
+  pil_image.thumbnail(size)
+  
+  # crop image
+  np_im = np.array(pil_image)
+  print(np_im.shape)
+  np_im = np_im[(np_im.shape[0] - 224) // 2:(np_im.shape[0] - 224) // 2 + 224, (np_im.shape[1] - 224) // 2:(np_im.shape[1] - 224) // 2 + 224, :]
 
+  print(np_im.shape)
+  
+  # normalize image
+  mean = np.array([0.485, 0.456, 0.406])
+  std = np.array([0.229, 0.224, 0.225])
+  np_im = np_im / 255
+  np_im = (np_im - mean) / std
+  print("shape before transpose", np_im.shape)
+  np_im = np.transpose(np_im, (2, 0, 1))
+  
+  print("shape after transpose", np_im.shape)
+  return
+
+process_image('flower_data/valid/1/image_06739.jpg')
 ```
 
 ```{python colab_type=code, id=jseTRbj5b2Hd, colab={}}
