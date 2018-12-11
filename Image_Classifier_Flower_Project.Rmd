@@ -37,7 +37,7 @@ First up is importing the packages you'll need. It's good practice to keep all t
 
 The program is run on Colab. So, we need to install torch first before running code. 
 
-```{python colab_type=code, executionInfo={'elapsed': 32923, 'status': 'ok', 'timestamp': 1544252783541, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=ZyVGourE6PQX, outputId=8cc5f747-6ece-4e90-e8cd-d485df12f9df, colab={'base_uri': 'https://localhost:8080/', 'height': 54}}
+```{python colab_type=code, id=ZyVGourE6PQX, outputId=1ba83ca9-84d9-440a-be45-13420316c1eb, executionInfo={'status': 'ok', 'timestamp': 1544507528468, 'user_tz': -360, 'elapsed': 43069, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, colab={'base_uri': 'https://localhost:8080/', 'height': 54}}
 # http://pytorch.org/
 from os.path import exists
 from wheel.pep425tags import get_abbr_impl, get_impl_ver, get_abi_tag
@@ -46,7 +46,7 @@ cuda_output = !ldconfig -p|grep cudart.so|sed -e 's/.*\.\([0-9]*\)\.\([0-9]*\)$/
 accelerator = cuda_output[0] if exists('/dev/nvidia0') else 'cpu'
 
 !pip install -q http://download.pytorch.org/whl/{accelerator}/torch-0.4.1-{platform}-linux_x86_64.whl torchvision
-import torch
+
 ```
 
 ```{python colab_type=code, id=isu5fx7s5qet, colab={}}
@@ -54,18 +54,19 @@ import torch
 # %matplotlib inline
 # %config InlineBackend.figure_format = 'retina'
 
+import torch
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 from torch import nn
 from torch import optim
 import torch.nn.functional as F
 from torchvision import datasets, transforms, models
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import OrderedDict
+from google.colab import files
 ```
 
-```{python colab_type=code, executionInfo={'elapsed': 6591, 'status': 'ok', 'timestamp': 1544266210184, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=1deJPK6pyX-3, outputId=fdb1c938-a144-4c5f-f901-276dacba2920, colab={'base_uri': 'https://localhost:8080/', 'height': 207}}
+```{python colab_type=code, id=1deJPK6pyX-3, colab={}}
 !pip install Pillow==4.0.0
 !pip install PIL
 !pip install image
@@ -81,21 +82,20 @@ The validation set is used to measure the model's performance on data it hasn't 
 
 The pre-trained networks available from `torchvision` were trained on the ImageNet dataset where each color channel was normalized separately. For both sets you'll need to normalize the means and standard deviations of the images to what the network expects. For the means, it's `[0.485, 0.456, 0.406]` and for the standard deviations `[0.229, 0.224, 0.225]`, calculated from the ImageNet images.  These values will shift each color channel to be centered at 0 and range from -1 to 1.
 
-```{python colab_type=code, executionInfo={'elapsed': 51084, 'status': 'ok', 'timestamp': 1544252801727, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=JMjhrWBd6Nv-, outputId=bcca53a2-7ba0-49c1-d2fc-617c98860636, colab={'base_uri': 'https://localhost:8080/', 'height': 224}}
-#download a flower dataset
+```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544507567281, 'user_tz': -360, 'elapsed': 81847, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=JMjhrWBd6Nv-, outputId=bea027d9-9f01-496f-c90c-d726ed604abe, colab={'base_uri': 'https://localhost:8080/', 'height': 206}}
+#download a cat_dog dataset
 !wget https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip
   
 ```
 
-```{python colab_type=code, executionInfo={'elapsed': 56680, 'status': 'ok', 'timestamp': 1544252807324, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=WhGh5ZXA6qE1, outputId=8ec536c4-5714-4ce9-e3fa-c505acf5db62, colab={'base_uri': 'https://localhost:8080/', 'height': 128843}}
+```{python colab_type=code, id=WhGh5ZXA6qE1, colab={}}
 #unzip the downloaded dataset
 !unzip flower_data.zip
 ```
 
 ```{python colab_type=code, id=VqHTA5AA60pt, colab={}}
 data_dir = 'flower_data'
-train_dir = data_dir + '/train'
-valid_dir = data_dir + '/valid'
+
 # number of subprocesses to use for data loading
 num_workers = 0
 # how many samples per batch to load
@@ -137,6 +137,7 @@ train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,sam
 valid_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, 
     sampler=valid_sampler, num_workers=num_workers)
 test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
+
 ```
 
 ### Label mapping
@@ -144,11 +145,11 @@ test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 Mapping from a category label to a category name has to be loaded and it can be found in the file `cat_to_name.json`. It's a JSON object which can be read in with the [`json` module](https://docs.python.org/2/library/json.html). This will give us a dictionary mapping the integer encoded categories to the actual names of the flowers.
 
 ```{python colab_type=code, id=jFHX9AXE95Zg, colab={}}
-import json
+#import json
 
 #!wget https://drive.google.com/file/d/1H5bhIyF2HQc7G_SPvKg_Q4dmTN6CFHLF/view?usp=sharing 
-with open('flower_data/cat_to_name.json', 'r') as f:
-    cat_to_name = json.load(f)
+#with open('flower_data/cat_to_name.json', 'r') as f:
+#    cat_to_name = json.load(f)
 ```
 
 # Building and training the classifier
@@ -168,56 +169,15 @@ We're going to leave this part up to you. If you want to talk through it with so
 
 Let's load in a model such as **`DenseNet`** and print out the architecture
 
-```{python colab_type=code, executionInfo={'elapsed': 872, 'status': 'ok', 'timestamp': 1544254929497, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=18eI5i6OHY1e, outputId=f4064d89-606a-4fa5-92af-fe965a128243, colab={'base_uri': 'https://localhost:8080/', 'height': 8571}}
+```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544507576190, 'user_tz': -360, 'elapsed': 90729, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=18eI5i6OHY1e, outputId=4bdedd1f-aac7-4c22-c6aa-179bf36f35e9, colab={'base_uri': 'https://localhost:8080/', 'height': 106}}
+arch = 'densenet121'
 model = models.densenet121(pretrained=True)
-model
+#model
 ```
 
 This model is built out of two main parts, the features and the classifier. The features part is a stack of convolutional layers and overall works as a feature detector that can be fed into a classifier. The classifier part is a single fully-connected layer (classifier): Linear(in_features=1024, out_features=1000). This layer was trained on the ImageNet dataset, so it won't work for our specific problem. That means we need to replace the classifier, but the features will work perfectly on their own. In general, I think about pre-trained networks as amazingly good feature detectors that can be used as the input for simple feed-forward classifiers.
 
-```{python colab_type=code, executionInfo={'elapsed': 644, 'status': 'ok', 'timestamp': 1544254937899, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=9xpCxi9fHbBV, outputId=1101ecbc-69b4-4173-b059-d0fc32b0af1f, colab={'base_uri': 'https://localhost:8080/', 'height': 102}}
-# Freeze parameters so we don't backprop through them
-for param in model.parameters():
-    param.requires_grad = False
-
-#classifier = nn.Sequential(OrderedDict([
-#                          ('fc1', nn.Linear(1024, 500)),
-#                          ('relu', nn.ReLU()),
-#                          ('fc2', nn.Linear(500, 102)),
-#                          ('output', nn.LogSoftmax(dim=1))
-#                          ]))
-
-# define the CNN architecture
-class Classifier(nn.Module):
-    def __init__(self):
-        super(Classifier, self).__init__()
-        # linear layer (1024 -> 500)
-        self.fc1 = nn.Linear(1024, 500)
-        # linear layer (500 -> 102)
-        self.fc2 = nn.Linear(500, 102)
-        # dropout layer (p=0.25)
-        self.dropout = nn.Dropout(0.25)
-
-    def forward(self, x):
-        # flatten image input
-        x = x.view(-1, 1024)
-        # add dropout layer
-        x = self.dropout(x)
-        # add 1st hidden layer, with relu activation function
-        x = F.relu(self.fc1(x))
-        # add dropout layer
-        x = self.dropout(x)
-        # add 2nd hidden layer, with relu activation function
-        x = self.fc2(x)
-        return x
-    
-model.classifier = Classifier() 
-Classifier()
-```
-
-Let's train the classifier. For deep NN it is better to use GPU dseigned for matrix / tensor operations in parallel.  
-
-```{python colab_type=code, executionInfo={'elapsed': 632, 'status': 'ok', 'timestamp': 1544254945535, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=JskcQAKAJNRS, outputId=ad035390-2bcb-4d1b-e334-597fbc6835ab, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
+```{python colab_type=code, executionInfo={'status': 'ok', 'timestamp': 1544507576191, 'user_tz': -360, 'elapsed': 90712, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, id=JskcQAKAJNRS, outputId=a8859dab-c444-45c7-c936-67d253fa0f45, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
 #Check if parallel computing is available / if CUDA is available
 
 train_on_gpu = torch.cuda.is_available()
@@ -230,126 +190,182 @@ else:
     device = "cuda"
 ```
 
+```{python colab_type=code, id=9xpCxi9fHbBV, outputId=93b4546b-ce0a-4bc0-feeb-1af8dfabf8bf, executionInfo={'status': 'ok', 'timestamp': 1544507579547, 'user_tz': -360, 'elapsed': 94048, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, colab={'base_uri': 'https://localhost:8080/', 'height': 34}}
+# Freeze parameters so we don't backprop through them
+for param in model.parameters():
+    param.requires_grad = False
+
+
+
+
+class Classifier(nn.Module):
+    def __init__(self): #, input_size, output_size, hidden_layers, drop_p=0.5):
+        ''' Builds a feedforward network with arbitrary hidden layers.
+        
+            Arguments
+            ---------
+            input_size: integer, size of the input layer
+            output_size: integer, size of the output layer
+            hidden_layers: list of integers, the sizes of the hidden layers
+        
+        '''
+        self.input_size_out = 1024
+        input_size = self.input_size_out
+        hidden_layers = [768, 512, 256, 128]
+        self.output_size_out = 102
+        output_size = self.output_size_out
+        drop_p = 0.2
+        super().__init__()
+        # Input to a hidden layer
+        self.hidden_layers = nn.ModuleList([nn.Linear(input_size, hidden_layers[0])])
+        
+        # Add a variable number of more hidden layers
+        layer_sizes = zip(hidden_layers[:-1], hidden_layers[1:])
+        self.hidden_layers.extend([nn.Linear(h1, h2) for h1, h2 in layer_sizes])
+        
+        self.output = nn.Linear(hidden_layers[-1], output_size)
+        
+        self.dropout = nn.Dropout(p=drop_p)
+        
+
+        
+    def forward(self, x):
+        ''' Forward pass through the network, returns the output logits '''
+        
+        for each in self.hidden_layers:
+            x = F.relu(each(x))
+            x = self.dropout(x)
+        x = self.output(x)
+        
+        return F.log_softmax(x, dim=1)
+
+    
+model.classifier = Classifier() 
+
+model.to(device);
+model.classifier.input_size_out
+#for param_tensor in model.state_dict():
+#    print(param_tensor, "\t", model.state_dict()[param_tensor].size())
+```
+
+Let's train the classifier. For deep NN it is better to use GPU dseigned for matrix / tensor operations in parallel.  
+
+
 ### Specify Loss Function and Optimizer
 
 
 
 ```{python colab_type=code, id=VpmRqZ39PLhH, colab={}}
-learning_rate = 0.01 
-
+learning_rate = 0.0009 * 0.75
+momentum=0.9
 
 
 # specify loss function (categorical cross-entropy)
 criterion = nn.CrossEntropyLoss()
 
 # specify optimizer
-optimizer = optim.SGD(model.parameters(), lr=learning_rate)
-```
-
-```{python colab_type=code, executionInfo={'elapsed': 611, 'status': 'ok', 'timestamp': 1544254982405, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=wjsKqP_axLgc, outputId=bcc4aa5d-3b3a-47e4-e19b-de80006f7f57, colab={'base_uri': 'https://localhost:8080/', 'height': 8605}}
-model
+optimizer = optim.Adam(model.classifier.parameters(), lr=learning_rate) #### # Only train the classifier parameters, feature parameters are frozen
 ```
 
 ### Train the network
 
-```{python colab_type=code, executionInfo={'elapsed': 122206, 'status': 'ok', 'timestamp': 1544255144748, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=zYu3cZheQGSN, outputId=90f00b6f-b46e-405d-f0ea-6ba215a0f286, colab={'base_uri': 'https://localhost:8080/', 'height': 71}}
-# number of epochs to train the model
-n_epochs = 1
-model.to(device); #move model to GPU if available
+```{python id=Fw932NmjdUyo, colab_type=code, outputId=7cb2aaa6-a296-460d-c339-0afd2c62cd04, executionInfo={'status': 'error', 'timestamp': 1544454373385, 'user_tz': -360, 'elapsed': 485784, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}}, colab={'base_uri': 'https://localhost:8080/', 'height': 1354}}
+epochs = 20000
+steps = 0
+running_loss = 0
+valid_loss = 0.0
 valid_loss_min = np.Inf # track change in validation loss
-
-for epoch in range(1, n_epochs+1):
-
-    # keep track of training and validation loss
-    train_loss = 0.0
-    valid_loss = 0.0
- 
-    
-    ###################
-    # train the model #
-    ###################
+print_every = 5
+for epoch in range(epochs):
     model.train()
-    for batch_idx, (data, target) in enumerate(train_loader):
-        # move tensors to GPU if CUDA is available
-        if train_on_gpu:
-            data, target = data.cuda(), target.cuda()
-        # clear the gradients of all optimized variables
+    for inputs, labels in train_loader:
+        steps += 1
+        # Move input and label tensors to the default device
+        inputs, labels = inputs.to(device), labels.to(device)
+        
         optimizer.zero_grad()
-        # forward pass: compute predicted outputs by passing inputs to the model
-        output = model.forward(data)
-        # calculate the batch loss
-        loss = criterion(output, target)
-        # backward pass: compute gradient of the loss with respect to model parameters
+        
+        logps = model.forward(inputs)
+        loss = criterion(logps, labels)
         loss.backward()
-        # perform a single optimization step (parameter update)
         optimizer.step()
-        # update training loss
-        train_loss += loss.item()*data.size(0)
+
+        running_loss += loss.item() * inputs.size(0)
         
-    ######################    
-    # validate the model #
-    ######################
+#        if steps % print_every == 0:
+    valid_loss = 0
+    accuracy = 0
     model.eval()
-    accuracy = 0.0
-    for batch_idx, (data, target) in enumerate(valid_loader):
-        # move tensors to GPU if CUDA is available
-        if train_on_gpu:
-            data, target = data.cuda(), target.cuda()
-        # forward pass: compute predicted outputs by passing inputs to the model
-        output = model(data) #output == logps 
-        # calculate the batch loss
-        loss = criterion(output, target)
-        # update average validation loss 
-        valid_loss += loss.item()*data.size(0)
-        
-        # Calculate accuracy
-        ps = torch.exp(output)
-        top_p, top_class = ps.topk(1, dim=1)
-        equals = top_class == target.view(*top_class.shape)
-        accuracy += torch.mean(equals.type(torch.FloatTensor)).item()        
-        
-    
-    # calculate average losses
-    train_loss = train_loss/len(train_loader.dataset)
-    valid_loss = valid_loss/len(valid_loader.dataset)
-    accuracy = accuracy / len(valid_loader.dataset) * 100
-        
-    # print training/validation statistics 
-    print('Epoch: {} \tTraining Loss: {:.4f} \tValidation Loss: {:.4f} \tAccuracy: {:.3f}%'
-          .format(epoch, train_loss, valid_loss, accuracy))
+    with torch.no_grad():
+        for inputs, labels in valid_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            logps = model.forward(inputs)
+            batch_loss = criterion(logps, labels)
+
+            valid_loss += batch_loss.item() * labels.size(0)
+
+            # Calculate accuracy
+            ps = torch.exp(logps)
+            top_p, top_class = ps.topk(1, dim=1)
+            equals = top_class == labels.view(*top_class.shape)
+            accuracy += torch.mean(equals.type(torch.FloatTensor)).item()
+
+    print(f"Epoch {epoch+1}/{epochs}.. "
+          f"Train loss: {running_loss/len(train_loader):.3f}.. "
+          f"Validation loss: {valid_loss/len(valid_loader):.3f}.. "
+          f"Validation accuracy: {100*accuracy/len(valid_loader):.3f}%")
     
     # save model if validation loss has decreased
     if valid_loss <= valid_loss_min:
-        print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ...'.format(
-        valid_loss_min,
-        valid_loss))
+        print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ... \n'.format(
+        valid_loss_min/len(valid_loader),
+        valid_loss/len(valid_loader)))
         model.class_to_idx = train_data.class_to_idx
+ 
+        model.to('cpu')
         states = {
-            'epoch': epoch,
-            'state_dict': model.state_dict(),
-            'optimizer': optimizer.state_dict()
-        }                
+          'epoch': epoch+1,
+          'arch' : arch,
+          'class_to_idx': model.class_to_idx,  
+          'state_dict': model.state_dict(),
+          'optimizer': optimizer.state_dict()
+#          'loss' :  running_loss,
+#          'criterion' : criterion,  
+#          'input_size': model.classifier.input_size_out,
+#          'output_size': model.classifier.output_size_out,
+#          'hidden_layers': [each.out_features for each in model.classifier.hidden_layers],
+        }
+        
         torch.save(states, 'checkpoint.pt')
-        valid_loss_min = valid_loss
+        model.to(device)
+        valid_loss_min = valid_loss 
+    running_loss = 0
+    
 ```
 
 ## Loading the checkpoint
 
 Let's write a function that can load a checkpoint and rebuild the model, so we can come back to this project and keep working on it without having to retrain the network.
 
-```{python colab_type=code, executionInfo={'elapsed': 741, 'status': 'ok', 'timestamp': 1544255555711, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=3o4knBNwu_ac, outputId=a081d25c-9638-486e-c879-c4c0c6727c6b, colab={'base_uri': 'https://localhost:8080/', 'height': 71}}
+```{python colab_type=code, id=3o4knBNwu_ac, colab={}}
 # https://discuss.pytorch.org/t/how-to-save-the-optimizer-setting-in-a-log-in-pytorch/17187/2
-def checkpoint_loader(filename, model, optimizer):
-  state_dict = torch.load(filename)
-  optimizer.load_state_dict(state_dict['optimizer'])
-  model.load_state_dict(state_dict['state_dict'])
-#  print('optimizer: ',state_dict['optimizer'])
-#  print('state_dict: ',state_dict['state_dict'])
-#  print('epoch: ',state_dict['epoch'])
+def checkpoint_loader(filename):
   
-  return model, optimizer, state_dict['epoch']
+  checkpoint = torch.load(checkpoint_path)
+  
+  model = models.densenet121(pretrained=False)
+  for param in model.parameters():
+    param.requires_grad = False
+ 
+  # Put the classifier on the pretrained network
+  model.classifier = Classifier()
 
-model, optimizer, epoch = checkpoint_loader('checkpoint.pt', model, optimizer)
+
+  model.load_state_dict(checkpoint['state_dict'])
+  
+  return model
+
+model, optimizer, epoch = checkpoint_loader()
 
 
 
@@ -376,7 +392,7 @@ As before, the network expects the images to be normalized in a specific way. Fo
 And finally, PyTorch expects the color channel to be the first dimension but it's the third dimension in the PIL image and Numpy array. WE can reorder dimensions using [`ndarray.transpose`](https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.ndarray.transpose.html). The color channel needs to be first and retain the order of the other two dimensions.
 
 
-```{python colab_type=code, executionInfo={'elapsed': 661, 'status': 'ok', 'timestamp': 1544279526456, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=BRKVtVxurOx_, outputId=7e82fddb-b4e6-4bf1-9bf0-6ea10d7ca2b8, colab={'base_uri': 'https://localhost:8080/', 'height': 119}}
+```{python colab_type=code, id=BRKVtVxurOx_, colab={}}
 def process_image(image):
   ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
         returns an Numpy array
@@ -422,7 +438,7 @@ def process_image(image):
 image = process_image('flower_data/valid/1/image_06739.jpg')
 ```
 
-```{python colab_type=code, executionInfo={'elapsed': 1318, 'status': 'ok', 'timestamp': 1544280769475, 'user': {'displayName': 'Boris Kushnarev', 'photoUrl': 'https://lh5.googleusercontent.com/-7Z8h64--40c/AAAAAAAAAAI/AAAAAAAAajw/pfM0Ql97dVY/s64/photo.jpg', 'userId': '10599252230475805342'}, 'user_tz': -360}, id=jseTRbj5b2Hd, outputId=7f3f903a-8546-4544-d101-1deaff729de0, colab={'base_uri': 'https://localhost:8080/', 'height': 285}}
+```{python colab_type=code, id=jseTRbj5b2Hd, colab={}}
 #To check the work, the function below converts a PyTorch tensor and displays it in the notebook. 
 #If the process_image function works, running the output through this function should return the original image 
 #(except for the cropped out portions).
