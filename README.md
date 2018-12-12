@@ -14,7 +14,9 @@ Code was developed in the provided template in Jupyter Notebook. It is well comm
 
 ### Version control 
 
-I have tried to manage the version control based on thi 
+I have tried to manage the version control based on [this article](https://towardsdatascience.com/version-control-with-jupyter-notebooks-f096f4d7035a)
+
+
 
 <img src="./assets/pytorch-acceptance-badge.png" alt="Pytorch scholarship" style="width:150px;height:150px;">
 
