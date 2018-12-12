@@ -6,14 +6,14 @@ This project was developed for PyTorch Scholarship Challange 2018/2019. I was su
 
 ### Introduction
 
-This image classifier can distinguish different species of flowers from 102 categories from [this dataset](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html). It uses trained Convolutional Neural Networks provided in PyTorch, which is a freely available Deep Learning module kindly offered by Facebook and architecture of the classifier was .
+This image classifier can distinguish different species of flowers from 102 categories from [this dataset](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html). It uses trained Convolutional Neural Networks provided in PyTorch, which is a freely available Deep Learning module kindly offered by Facebook. 
 
 ### Code 
 
 Code was developed in the provided template in Jupyter Notebook. It is well commented and can be found in this repo. Due to the huge number of parameters in the developed model and intensive matrix/tensor computations it is recommended to use gpu. The Colab was used for this purpose and it ran for 5-8 hours to get results even on gpu. 
 
 #### Models 
-3 Different were used:
+3 Different models were used:
 * densenet121
 * vgg19
 * alexnet
@@ -23,7 +23,7 @@ and compared between each other below.
 
 ### Version control 
 
-I have tried to manage the version control based on [this article](https://towardsdatascience.com/version-control-with-jupyter-notebooks-f096f4d7035a). However, because I'd run the code on Colab it became complecated to control versions, but it was still managed.  
+I have tried to manage the versions based on [this article](https://towardsdatascience.com/version-control-with-jupyter-notebooks-f096f4d7035a). However, because I'd run the code on Colab it became complecated to control versions, but it was still managed.  
 
 ## Summary
 
@@ -46,7 +46,11 @@ As we can see, the best validation accuracy was reached for densenet121 - 90.152
 
 Again, the densenet121 shows a better performance. 
 
-It is interesting to note that during testing the testing accuracy for each model usually are 2-3% higher higher compare to validation accuracy. It can be explan as we validation dataset we extracted 20% pictures from the training dataset which was randomly rotated, croped and resized.   
+It is interesting to note that during testing the testing accuracy for each model usually are 2-3% higher compare to validation accuracy. It can be explan as the validation dataset is 20% of pictures from the training dataset which was randomly rotated, croped and resized. However, for testing the only one transformation was performed which is Center Crop.    
+
+## How to improve results
+
+Even thoght, densenet121 model shows a good performance we can still try to adjust hyperparameters such as learning rate or introduce momentum to the model. One can try to use different normalization parameters such as mean and stdandard devioation. Moreoverm, the classifier architecture can be changed. 
 
 **Thank you Udacity and Facebook for such opportunity!** 
 
