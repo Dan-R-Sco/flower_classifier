@@ -52,6 +52,12 @@ It is interesting to note that during testing the testing accuracy for each mode
 
 Even thoght, densenet121 model shows a good performance we can still try to adjust hyperparameters such as learning rate or introduce momentum to the model. One can try to use different normalization parameters such as mean and stdandard devioation. Moreoverm, the classifier architecture can be changed. 
 
+## Jupyter notebook included in the repo for:
+
+* densenet121 - Image_Classifier_Flower_Project.ipynb
+* vgg19 - Image_Classifier_Flower_Project_VGG19.ipynb
+* alexnet - alexnet_Image_Classifier_Flower_Project.ipynb
+
 **Thank you Udacity and Facebook for such opportunity!** 
 
 <img src="./assets/pytorch-acceptance-badge.png" alt="Pytorch scholarship" style="width:150px;height:150px;">
