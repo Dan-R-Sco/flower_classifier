@@ -48,7 +48,7 @@ Again, the densenet121 shows a better performance.
 
 It is interesting to note that during testing the testing accuracy for each model usually are 2-3% higher higher compare to validation accuracy. It can be explan as we validation dataset we extracted 20% pictures from the training dataset which was randomly rotated, croped and resized.   
 
-Thank you Udacity and Facebook for such opportunity! 
+**Thank you Udacity and Facebook for such opportunity!** 
 
 <img src="./assets/pytorch-acceptance-badge.png" alt="Pytorch scholarship" style="width:150px;height:150px;">
 
