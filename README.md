@@ -6,7 +6,7 @@ This project was developed for PyTorch Scholarship Challange 2018/2019. I was su
 
 ### Introduction
 
-This image classifier can distinguish different species of flowers from 102 categories[this dataset](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html). It uses trained Convolutional Neural Networks provided in PyTorch, which is a freely available Deep Learning module kindly offered by Facebook and architecture of the classifier was .
+This image classifier can distinguish different species of flowers from 102 categories from [this dataset](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html). It uses trained Convolutional Neural Networks provided in PyTorch, which is a freely available Deep Learning module kindly offered by Facebook and architecture of the classifier was .
 
 ### Code 
 
