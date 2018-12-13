@@ -50,7 +50,11 @@ It is interesting to note that during testing the testing accuracy for each mode
 
 ## How to improve results
 
-Even thoght, densenet121 model shows a good performance we can still try to adjust hyperparameters such as learning rate or introduce momentum to the model. One can try to use different normalization parameters such as mean and stdandard devioation. Moreoverm, the classifier architecture can be changed. 
+Even thoght, densenet121 model shows a good performance we can still try to adjust hyperparameters such as learning rate or introduce momentum to the model. One can try to use different normalization parameters such as mean and stdandard devioation. Moreoverm, the classifier architecture can be changed.
+
+Below is a screenshort for testing results for densenet121. You can see that the accuracy for densenet121 model for epoch 125 reaches 94.25% while during validation this number is only 90.152% 
+<img src="./Accuracy.jpg" alt="Pytorch scholarship" style="width:25px;height:25px;">
+
 
 ## Jupyter notebook included in the repo for:
 
