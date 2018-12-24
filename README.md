@@ -1,6 +1,6 @@
 ## flower_classifier
 
-This project was developed for PyTorch Scholarship Challange 2018/2019. I was succesfully accepted to this progran: 
+This project was developed for PyTorch Scholarship Challange 2018/2019. I was succesfully accepted to this program: 
 <img src="./assets/email.jpg" alt="Pytorch scholarship" style="width:25px;height:25px;">
 
 
